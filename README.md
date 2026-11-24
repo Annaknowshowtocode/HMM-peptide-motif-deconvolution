@@ -17,7 +17,6 @@ DualSimplex clustering, and comparison with GibbsCluster 2.0.
 - [Method overview](#method-overview)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
-- [Expected data layout](#expected-data-layout)
 - [Pipeline](#pipeline)
   - [`000_make_iedb_dataset.py` - IEDB preprocessing](#000_make_iedb_datasetpy--iedb-preprocessing)
   - [`001_generate_simulated_motifs.py` - synthetic data generation](#001_generate_simulated_motifspy--synthetic-data-generation)
@@ -28,7 +27,6 @@ DualSimplex clustering, and comparison with GibbsCluster 2.0.
 - [Reproducing the experiments](#reproducing-the-experiments)
 - [Modules](#modules)
 - [Configuration](#configuration)
-- [Outputs](#outputs)
 - [References & acknowledgements](#references--acknowledgements)
 
 ---
