@@ -394,7 +394,10 @@ A completed run produces:
 - DualSimplex: Kleverov D., Aladyeva E., Serdyukov A., Artyomov M.N. *Non-negative matrix
   factorization and deconvolution as a dual simplex problem.* Genome Biology, 2026, 27(1),
   25. DOI: https://doi.org/10.1186/s13059-025-03910-1
-- Built on top of the HMM codebase at denklewer/MHC_predictor and a customised pomegranate build (branch before_py_torch).
+- - Built on top of the HMM codebase at
+  [`denklewer/MHC_predictor`](https://github.com/denklewer/MHC_predictor) and a customised
+  [pomegranate](https://github.com/denklewer/pomegranate/tree/before_py_torch) build
+  (branch `before_py_torch`).
 - GibbsCluster: Andreatta M., Alvarez B., Nielsen M., *Nucleic Acids Res.* 2017, 45(W1),
   W458-W463.
 - Assay filtering and binder definition: Sarkizova S. et al., *Nat. Biotechnol.* 2020,
