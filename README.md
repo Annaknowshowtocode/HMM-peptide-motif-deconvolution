@@ -12,19 +12,8 @@ We treat motif deconvolution as **soft clustering** in two stages:
 1. **Hierarchical HMM ensemble** - a tree of interpretable HMMs is trained on the unlabelled pool; peptides are split by their inferred binding cores and the child ensembles cross-enrich each other's training sets. Every peptide is then scored against all HMMs → score matrix `S` (peptides × HMMs).
 2. **DualSimplex** - factorises `V ≈ W·H` using the geometry of two linked simplices: `W` = peptide memberships, `H` = component profiles over HMMs. The number of components is read from the singular-value spectrum.
 
-```mermaid
-flowchart LR
-    A[Unlabelled peptides] --> B[Root: 50 HMMs]
-    B --> C[Viterbi cores → PCA → K-means k=2]
-    C --> D[Branch 1]
-    C --> E[Branch 2]
-    D <-->|cross-enrichment x3| E
-    D --> F[Recursive splits]
-    E --> F
-    F --> G[Score matrix S]
-    G --> H[DualSimplex V≈WH]
-    H --> I[Memberships W, profiles H, logos]
-```
+<img width="848" height="232" alt="Снимок экрана — 2026-11-24 в 16 25 14" src="https://github.com/user-attachments/assets/44e9bdf5-3ea9-4244-9de5-70f3b4b01217" />
+
 
 ## Repository layout
 
