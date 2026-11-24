@@ -95,8 +95,7 @@ Finish with `dual_simplex.R` on the last layer, **K = 5**, and compare with Gibb
 4. Run **`main_IEDB.ipynb`** (`PreprocessedIEDBDataParams`, lengths 12–18, `get_train_test_data(..., collapse_to_dummy=True)`). The collapse removes peptides shared between alleles, balances alleles by size preserving the length distribution, keeps the true allele as `source_allele` (evaluation only) and merges everything into one `dummy_allele`. Training is as above with `total_layers_to_do=3`.
 5. `dual_simplex.R` with **K = 3**; baseline = GibbsCluster with k = 3. Reference matrices (`DRB1_0101.mat`, `DRB1_0301.mat`, `DRB1_0401.mat` in `data/reference_matrices/`) are used by `motif_benchmark` to compare recovered motifs.
 
-> ⚠️ The mixture's alleles are hard-coded in `get_train_test_data` (`data_reading_methods.py`):
-> `KEEP = {"HLA-DRB1_0101", "HLA-DRB1_0301", "HLA-DRB1_0401"}` for the DRB1 mixture, `KEEP = {"HLA-DPA1_0202-DPB1_0501"}` for the sub-motif analysis of a single DP heterodimer. Un-comment the one you need.
+> The mixture's alleles are hard-coded in data_reading_methods.py
 
 ## How the HMM ensemble is built
 
