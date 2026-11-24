@@ -228,7 +228,8 @@ The main drivers of Stage 1. The two notebooks are identical except for the data
   - clustermaps and UMAPs (SVG).
 - **Configure:** `root_dir`, `num_runs`, `lengths_to_use`, `total_layers_to_do`.
 
-<img width="426" height="131" alt="Снимок экрана — 2026-11-17 в 11 31 55" src="https://github.com/user-attachments/assets/81700492-3581-4552-ad2e-f101c307f100" />
+<img width="883" height="422" alt="Снимок экрана — 2026-11-24 в 16 43 17" src="https://github.com/user-attachments/assets/fbd3dc20-82fc-4029-9a22-804669066bf6" />
+
 
 ### `dual_simplex.R` - DualSimplex clustering and benchmark
 
