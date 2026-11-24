@@ -121,13 +121,6 @@ Main knobs: `num_runs`, `lengths_to_use`, `enrichment_steps`, `trash_model_infor
 
 **Evaluation vs GibbsCluster:** top-*N* peptides per cluster (DualSimplex: by membership; Gibbs: by corrected score from `gibbs.<k>g.out`); confusion matrix vs true allele; greedy one-to-one cluster↔allele matching with the true noise class excluded; accuracy and macro precision/recall/F1 (`caret`); ARI, NMI, 1 − NID (`aricode`).
 
-## Notes
-
-* Paths are hard-coded (`/Users/annaklimova/...`) in scripts, notebooks and the R file - replace them.
-* The R script has some Russian labels (`Кластер`, `Шум`); keep the `noise_label` argument consistent.
-* HMM initialisation is random by design, so trees differ between runs; the generator has `--seed`, DualSimplex uses `set.seed(4)`.
-* Models and matrices are saved after every layer, so DualSimplex can be re-run without retraining.
-
 ## Citation
 
 > Klimova A., Kleverov D., Shalyto A., Artyomov M. *Clustering peptide sequences using Hidden Markov Models and matrix factorization methods.*
