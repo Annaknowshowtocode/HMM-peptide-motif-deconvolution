@@ -72,12 +72,15 @@ The method has two stages.
 6. **Score matrix.** All peptides are scored against the final ensemble, giving a
    peptide × HMM matrix `S`.
 
+<img width="854" height="251" alt="Снимок экрана — 2026-11-24 в 16 39 57" src="https://github.com/user-attachments/assets/b14cc494-316a-4b46-b920-1da257fba6a4" />
+
 **Stage 2 - DualSimplex (probabilistic clustering)**
 
 `S` is shifted to be strictly positive and factorised as `V ≈ W·H`, where `W` (peptides ×
 components) holds soft memberships and `H` (components × HMMs) holds component profiles.
 The number of components is estimated from the singular-value spectrum of the matrix.
 Details: [How DualSimplex is applied](#how-dualsimplex-is-applied).
+
 
 Results are compared with **GibbsCluster 2.0** on the same peptides.
 
@@ -87,20 +90,10 @@ Results are compared with **GibbsCluster 2.0** on the same peptides.
 Washu_project/
 ├── 000_make_iedb_dataset.py                 # Step 0: per-allele datasets from the raw IEDB export
 ├── 001_generate_simulated_motifs.py         # Step 1: synthetic peptide mixtures with known motifs and noise
-├── 002_make_per_allele_per_length_split.py  # Step 2: per-length 5-fold train/test split (+ logos)
+├── 002_make_per_allele_per_length_split.py  # Step 2: per-length 5-fold train/test split 
 ├── simulated_main.ipynb                     # Step 3a: hierarchical HMM training, simulated data
 ├── main_IEDB.ipynb                          # Step 3b: hierarchical HMM training, IEDB data
 ├── dual_simplex.R                           # Step 4: DualSimplex + comparison with GibbsCluster
-│
-├── training_parameters.py                   # configuration: data scenarios, model/training parameters
-├── data_reading_methods.py                  # data loading, allele collapsing/balancing, length weights
-├── peptides_utils.py                        # helpers: allele class, logos, dict utils
-├── hmm_model_params.py                      # presets of HMM architecture and pseudocounts
-├── hmm_logic_methods.py                     # core engine: build/train HMMs, hierarchy, enrichment, score matrix
-├── core_embedding_split.py                  # optional split: protein-LM embeddings of cores (ESM-2/ProtBERT/ProtT5)
-├── hmm_visualization_methods.py             # logos, clustermaps, UMAP, per-layer diagnostics
-├── hmm_metrics.py                           # reference PSSMs (.mat) loading, motif metrics
-└── motif_benchmark.py                       # branch alignment and comparison with reference motifs
 ```
 
 ## Installation
@@ -129,11 +122,11 @@ pip install "numpy<1.24" pandas scipy scikit-learn seaborn matplotlib \
             logomaker mhcgnomes mhcnames "dask[dataframe]" umap-learn \
             networkx colorcet tqdm jupyter
 
-# 5. Only for core_embedding_split.py (optional)
+# 5. 
 pip install torch==2.2.2 transformers==4.57.6 sentencepiece
 ```
 
-`numpy<1.24` is needed because some helpers still use the removed `np.float` alias.
+`numpy<1.24` 
 
 **R part (DualSimplex)**
 
@@ -146,36 +139,16 @@ R ≥ 4.2 with the `DualSimplex`, `NMF` and `hNMF` packages (see the
 [GibbsCluster 2.0](https://services.healthtech.dtu.dk/services/GibbsCluster-2.0/)
 (web server or standalone) - only needed to reproduce the comparison.
 
-## Expected data layout
-
-Paths are set at the top of the scripts and in `ExperimentParams(root_dir=...)` inside the
-notebooks. A typical working tree:
-
-```
-data/
-├── mhc_ligand_full.csv                        # raw IEDB export (input to step 0)
-├── reference_matrices/*.mat                   # reference PSSMs (for the IEDB benchmark)
-├── simulated_data/
-│   └── sim_data_motifs_5_ratio_(...)_noize_0.25.csv   # produced by step 1
-└── simple_model_enrichment/
-    ├── data#<allele>.csv                      # produced by step 0
-    └── per_length_per_kfold_split/            # produced by step 2
-        └── <allele>#binders#{train,test}.csv
-<root_dir>/<experiment>/                       # produced by step 3 (models, diagnostics, figures)
-└── diagnostics/<dummy_allele>/
-    ├── layer{N}_scores_matrix.csv             # input to step 4
-    └── layer{N}_clustermap_row_order.csv
-```
 
 ## Pipeline
 
 Steps 0-2 prepare data; step 3 trains the HMM hierarchy and exports the score matrix;
 step 4 runs DualSimplex and the benchmark. Use **step 1 for simulated data** (steps 0 and 2
-are skipped) and **steps 0 → 2 for real IEDB data**.
+are skipped) and **steps 0, 2 for real IEDB data**.
 
 ### `000_make_iedb_dataset.py` - IEDB preprocessing
 
-Builds clean per-allele binder tables from a raw IEDB export.
+Builds per-allele binder tables from a raw IEDB export.
 
 - **Input:** `data/mhc_ligand_full.csv` - the full *MHC Ligand* export from the
   [Immune Epitope Database](https://www.iedb.org/) (two-row header).
@@ -196,7 +169,7 @@ Builds clean per-allele binder tables from a raw IEDB export.
 Generates peptide mixtures with a fully controlled motif structure for validation against
 a known ground truth.
 
-- **Input:** none (command-line arguments only).
+- **Input:** none.
 - **What it does:** builds peptides of 12-18 residues (class II) from a 9-residue core
   with motif-specific restrictions at P1, P4, P6 and P9; core start positions follow a
   discretised Gaussian; flanks are drawn from one shared random amino-acid distribution.
@@ -257,11 +230,7 @@ The main drivers of Stage 1. The two notebooks are identical except for the data
   - clustermaps and UMAPs (SVG).
 - **Configure:** `root_dir`, `num_runs`, `lengths_to_use`, `total_layers_to_do`.
 
-> ⚠️ The alleles of the IEDB mixture are selected by the `KEEP` set inside
-> `get_train_test_data` (`data_reading_methods.py`):
-> `{"HLA-DRB1_0101", "HLA-DRB1_0301", "HLA-DRB1_0401"}` for the three-allele DRB1 mixture,
-> `{"HLA-DPA1_0202-DPB1_0501"}` for the single DP heterodimer (sub-motif analysis).
-> Un-comment the one you need.
+<img width="426" height="131" alt="Снимок экрана — 2026-11-17 в 11 31 55" src="https://github.com/user-attachments/assets/81700492-3581-4552-ad2e-f101c307f100" />
 
 ### `dual_simplex.R` - DualSimplex clustering and benchmark
 
@@ -305,7 +274,7 @@ The script performs the following steps.
    solver on the filtered matrix and project again.
 4. **Initialise** the simplex vertices from the data:
    ```r
-   set.seed(4)
+   set.seed(42)
    dso$init_solution("select_omega")
    ```
 5. **Optimise** the vertices (5 rounds of 10 iterations), then check the error history:
@@ -434,13 +403,5 @@ A completed run produces:
 - Assay filtering and binder definition: Sarkizova S. et al., *Nat. Biotechnol.* 2020,
   38(2), 199-209.
 - Data: the [Immune Epitope Database (IEDB)](https://www.iedb.org/).
-
-Contacts: mus.anna.study@gmail.com · denklewer@gmail.com
-
-## Citation
-
-> Klimova A., Kleverov D., Shalyto A., Artyomov M. *Clustering peptide sequences using Hidden Markov Models and matrix factorization methods.*
-
-Built on: Kleverov et al., *Non-negative matrix factorization and deconvolution as a dual simplex problem*, Genome Biol. 2026, 27:25 · Kleverov, Shalyto, Artyomov, *interpretable HMMs for peptide binding regions*, Sci. Tech. J. Inf. Technol. Mech. Opt. 2023, 23(5):989–1000 · Andreatta et al., *GibbsCluster*, NAR 2017, 45(W1):W458 · Sarkizova et al., Nat. Biotechnol. 2020, 38:199.
 
 Contacts: mus.anna.study@gmail.com · denklewer@gmail.com
