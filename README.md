@@ -1,7 +1,7 @@
 # HMM + DualSimplex: probabilistic clustering of MHC-II peptide mixtures
 
 Code for the paper **"Clustering peptide sequences using Hidden Markov Models and matrix factorization methods"**
-(A. Klimova, D. Kleverov, A. Shalyto, M. Artyomov — ITMO University / Washington University in St. Louis).
+(A. Klimova, D. Kleverov, A. Shalyto, M. Artyomov - ITMO University / Washington University in St. Louis).
 
 ## Goal
 
@@ -9,8 +9,8 @@ Mass-spectrometry immunopeptidomics yields a *mixture* of peptides presented by 
 
 We treat motif deconvolution as **soft clustering** in two stages:
 
-1. **Hierarchical HMM ensemble** — a tree of interpretable HMMs is trained on the unlabelled pool; peptides are split by their inferred binding cores and the child ensembles cross-enrich each other's training sets. Every peptide is then scored against all HMMs → score matrix `S` (peptides × HMMs).
-2. **DualSimplex** — factorises `V ≈ W·H` using the geometry of two linked simplices: `W` = peptide memberships, `H` = component profiles over HMMs. The number of components is read from the singular-value spectrum.
+1. **Hierarchical HMM ensemble** - a tree of interpretable HMMs is trained on the unlabelled pool; peptides are split by their inferred binding cores and the child ensembles cross-enrich each other's training sets. Every peptide is then scored against all HMMs → score matrix `S` (peptides × HMMs).
+2. **DualSimplex** - factorises `V ≈ W·H` using the geometry of two linked simplices: `W` = peptide memberships, `H` = component profiles over HMMs. The number of components is read from the singular-value spectrum.
 
 ```mermaid
 flowchart LR
@@ -61,7 +61,7 @@ pip install "numpy<1.24" pandas scipy scikit-learn matplotlib seaborn logomaker 
 pip install torch==2.2.2 transformers==4.57.6 sentencepiece   # only for core_embedding_split.py
 ```
 
-* pomegranate **0.14.x API** plus the custom `DiscreteDistributionAnchor` / `DiscreteDistributionCycle` classes (not in upstream — use the authors' build).
+* pomegranate **0.14.x API** plus the custom `DiscreteDistributionAnchor` / `DiscreteDistributionCycle` classes (not in upstream - use the authors' build).
 * `numpy<1.24` because of the old `np.float` alias.
 
 **R ≥ 4.2:** `DualSimplex`, `NMF`, `hNMF` ([Genome Biol. 2026, doi:10.1186/s13059-025-03910-1](https://doi.org/10.1186/s13059-025-03910-1)), plus `dplyr tidyr stringr ggplot2 patchwork caret aricode svglite tibble`.
@@ -80,7 +80,7 @@ python 001_generate_simulated_motifs.py -o data/simulated_data --class II \
 Then run **`simulated_main.ipynb`** (set `root_dir` first):
 
 1. `get_train_test_data` → `remove_unused_lengths` → writes `peptides_for_gibbscluster.txt` → length weights;
-2. `prepare_multiple_models` / `train_multiple_models` — 50 root HMMs, then ranking by log-likelihood;
+2. `prepare_multiple_models` / `train_multiple_models` - 50 root HMMs, then ranking by log-likelihood;
 3. `hierarchically_train_splited_models(..., total_layers_to_do=5)`.
 
 Each layer writes to `<result_dir>/diagnostics/dummy_allele/`: `layer{N}_scores_matrix.csv` (mean per-residue log-prob of each peptide under each HMM) and `layer{N}_clustermap_row_order.csv` (`peptide, cluster, allele, noise`).
@@ -90,8 +90,8 @@ Finish with `dual_simplex.R` on the last layer, **K = 5**, and compare with Gibb
 ## Real data (IEDB)
 
 1. Download `mhc_ligand_full.csv` from [IEDB](https://www.iedb.org/) into `data/`.
-2. `python 000_make_iedb_dataset.py` — keeps linear peptides of canonical amino acids, removes the three assay groups inconsistent with the rest (as in Sarkizova et al.), maps qualitative labels to nominal affinities, pools with nM data, binder = ≤ 500 nM, deduplicates; writes `data#<allele>.csv` for the alleles in `ALLELES`.
-3. `python 002_make_per_allele_per_length_split.py` — groups by length (8–30) and makes shuffled 5-fold splits → `<allele>#binders#{train,test}.csv`.
+2. `python 000_make_iedb_dataset.py` - keeps linear peptides of canonical amino acids, removes the three assay groups inconsistent with the rest (as in Sarkizova et al.), maps qualitative labels to nominal affinities, pools with nM data, binder = ≤ 500 nM, deduplicates; writes `data#<allele>.csv` for the alleles in `ALLELES`.
+3. `python 002_make_per_allele_per_length_split.py` - groups by length (8–30) and makes shuffled 5-fold splits → `<allele>#binders#{train,test}.csv`.
 4. Run **`main_IEDB.ipynb`** (`PreprocessedIEDBDataParams`, lengths 12–18, `get_train_test_data(..., collapse_to_dummy=True)`). The collapse removes peptides shared between alleles, balances alleles by size preserving the length distribution, keeps the true allele as `source_allele` (evaluation only) and merges everything into one `dummy_allele`. Training is as above with `total_layers_to_do=3`.
 5. `dual_simplex.R` with **K = 3**; baseline = GibbsCluster with k = 3. Reference matrices (`DRB1_0101.mat`, `DRB1_0301.mat`, `DRB1_0401.mat` in `data/reference_matrices/`) are used by `motif_benchmark` to compare recovered motifs.
 
@@ -117,14 +117,14 @@ Main knobs: `num_runs`, `lengths_to_use`, `enrichment_steps`, `trash_model_infor
 3. **Filter HMMs** with `zero_distance < 0.001`, rebuild the solver and project again.
 4. **Initialise:** `set.seed(4); dso$init_solution("select_omega")`.
 5. **Optimise:** `dso$optim_solution(10, optim_config(coef_hinge_H = 1, coef_hinge_W = 1, coef_der_X = 0.01, coef_der_Omega = 0.01, method = "positivity", convergence_tol = 1e-30, stop_criteria_window = 1000))`, repeated 5×; check `plot_error_history()`.
-6. **Finalise:** `solution <- dso$finalize_solution()`; normalise rows of `W` to sum to 1. Peptides near a vertex belong to one component, on an edge to two, near the centre (typically noise) to none — weights flag ambiguous peptides.
+6. **Finalise:** `solution <- dso$finalize_solution()`; normalise rows of `W` to sum to 1. Peptides near a vertex belong to one component, on an edge to two, near the centre (typically noise) to none - weights flag ambiguous peptides.
 7. **Export:** top-5 HMMs per component (`H_top5_models_per_component.csv`) and top-*N* peptides per component (`top_peptides.csv`, `N = 3000`) for sequence logos.
 
 **Evaluation vs GibbsCluster:** top-*N* peptides per cluster (DualSimplex: by membership; Gibbs: by corrected score from `gibbs.<k>g.out`); confusion matrix vs true allele; greedy one-to-one cluster↔allele matching with the true noise class excluded; accuracy and macro precision/recall/F1 (`caret`); ARI, NMI, 1 − NID (`aricode`).
 
 ## Notes
 
-* Paths are hard-coded (`/Users/annaklimova/...`) in scripts, notebooks and the R file — replace them.
+* Paths are hard-coded (`/Users/annaklimova/...`) in scripts, notebooks and the R file - replace them.
 * The R script has some Russian labels (`Кластер`, `Шум`); keep the `noise_label` argument consistent.
 * HMM initialisation is random by design, so trees differ between runs; the generator has `--seed`, DualSimplex uses `set.seed(4)`.
 * Models and matrices are saved after every layer, so DualSimplex can be re-run without retraining.
